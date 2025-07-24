@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InvoiceGen - AI Invoice Generator</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --gradient-bg: radial-gradient(circle at 30% 80%, #00d5ff9e 10%, transparent 65%),
+                radial-gradient(circle at 75% 25%, #6959fddd 7%, transparent 50%),
+                linear-gradient(160deg, #1a1f2e76, #2a324ac0, #24293794);
+            --blue-main: #102154;
+            --blue-accent: #2e72d1;
+            --blue-light: #eaf4fe;
+            --blue-feature: #4f65f6;
+            --border-soft: #e4eaf3;
+            --btn-grad: linear-gradient(90deg, #2543c5d6 60%, #2515bbc9 100%);
+            --btn-grad-hover: linear-gradient(90deg, #292ce3dc 60%, #3e2af3 100%);
+            --section-bg: #f7fbfff6;
+            --feature-bg: #ffffffe2;
+            --feature-icon-bg: linear-gradient(135deg, #2babe6 60%, #746ad7 100%);
+            --feature-shadow: 0 4px 24px 0 rgba(50, 80, 170, 0.08);
+            --card-border: #e4eaf3;
+            --footer-bg: #fff;
+            --footer-text: #7a86a0;
+            --heading-gradient: linear-gradient(90deg, #edebf2 30%, #dcdeed 100%);
+
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            color: var(--blue-main);
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            letter-spacing: 0.02em;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        /* Navbar  */
+        .navbar-custom {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            background: rgba(255, 255, 255, 0.96);
+        }
+
+        .navbar-brand {
+            color: var(--blue-accent) !important;
+            font-weight: 800;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+        }
+
+        .navbar-brand i {
+            font-size: 2.1rem;
+            color: #4f4f4f;
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--blue-main) !important;
+            font-weight: 600;
+            margin-right: 13px;
+            padding: 0.45rem 1.1rem;
+            border-radius: 2rem;
+            background: none;
+            transition: color 0.18s, background 0.16s;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            color: var(--blue-accent) !important;
+            background: #9ec6f2c3;
+        }
+
+        .btn-sign {
+            background: var(--btn-grad);
+            color: #fff !important;
+            border-radius: 2rem;
+            font-weight: 600;
+            padding: .42rem 1.25rem;
+            border: none;
+            margin-left: 12px;
+            box-shadow: 0 2px 12px #6e7ff344;
+            transition: background 0.16s, color 0.16s;
+        }
+
+        .btn-sign:hover {
+            background: var(--btn-grad-hover);
+            color: #fff !important;
+        }
+
+        .navbar-spacer {
+            height: 68px;
+        }
+
+        @media (max-width: 991px) {
+            .navbar-spacer {
+                height: 70px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .navbar-spacer {
+                height: 58px;
+            }
+
+            .navbar-brand {
+                font-size: 1.25rem;
+            }
+        }
+
+        .main-section {
+            padding: 0;
+            margin: 0;
+        }
+
+        .section-inner {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Intro section  */
+        .intro-section {
+            padding: 5.5rem 0 2.5rem 0;
+            text-align: center;
+            background: transparent;
+        }
+
+        .intro-section h1 {
+            font-weight: 800;
+            font-size: 3.5rem;
+            margin-bottom: 1.1rem;
+            background: var(--heading-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .intro-section p {
+            color: #dee7f7;
+            font-size: 1.18rem;
+            font-weight: 500;
+            max-width: 700px;
+            margin: 0 auto 2.2rem auto;
+        }
+
+        .intro-section .btn-cta {
+            background: var(--btn-grad);
+            color: #fff;
+            font-size: 1.14rem;
+            border: none;
+            border-radius: 0.7rem;
+            padding: .85rem 2.4rem;
+            font-weight: 700;
+            box-shadow: 0 2px 12px #b5bbe373;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .intro-section .btn-cta:hover {
+            background: var(--btn-grad-hover);
+            color: #fff;
+        }
+
+        /* Features Section  */
+        .features-section {
+            padding: 3.2rem 0 2.5rem 0;
+            background: transparent;
+        }
+
+        .features-stepper {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 2.2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .feature-step {
+            flex: 1 1 210px;
+            min-width: 210px;
+            max-width: 260px;
+            background: var(--feature-bg);
+            border-radius: 1.3rem;
+            box-shadow: var(--feature-shadow);
+            padding: 2.1rem 1.3rem 2rem 1.3rem;
+            text-align: center;
+            border: 1.5px solid var(--card-border);
+            position: relative;
+            transition: box-shadow 0.16s, border 0.18s, transform 0.18s;
+            color: var(--blue-main);
+        }
+
+        .feature-step .step-icon {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.1rem auto;
+            border-radius: 50%;
+            font-size: 2.1rem;
+            background: var(--feature-icon-bg);
+            color: #fff;
+            box-shadow: 0 2px 10px #2ad0fd22;
+        }
+
+        .feature-step .step-title {
+            font-size: 1.14rem;
+            font-weight: 700;
+            color: var(--blue-feature);
+            margin-bottom: .4rem;
+        }
+
+        .feature-step .step-desc {
+            color: #3a4d6d;
+            font-size: 1.01rem;
+            font-weight: 500;
+        }
+
+        .feature-step.agent {
+            background: #e4eaf3;
+            border: 1.5px solid #2ad0fd;
+            box-shadow: 0 14px 44px #2ad0fd11;
+        }
+
+        .feature-step.agent .step-icon {
+            background: var(--feature-icon-bg);
+            color: #fff;
+        }
+
+        @media (max-width: 900px) {
+            .features-stepper {
+                flex-direction: column;
+                gap: 1.4rem;
+            }
+
+            .feature-step {
+                max-width: 100%;
+                min-width: 180px;
+            }
+        }
+
+        /* Tool section  */
+        #toolSection {
+            background: transparent;
+            padding: 0;
+        }
+
+        #toolSection .row {
+            background: var(--section-bg);
+            border-radius: 1.5rem;
+            box-shadow: 0 2px 28px 0 rgba(50, 80, 170, 0.09);
+            border: 1.5px solid var(--card-border);
+        }
+
+        #toolSection .col-md-7,
+        #toolSection .col-md-5 {
+            background: transparent;
+        }
+
+        #toolSection .col-md-5 {
+            border-left: 2px solid var(--card-border);
+        }
+
+        #toolSection .btn {
+            background: var(--btn-grad);
+            color: #fff;
+            font-size: 1.19rem;
+            font-weight: 900;
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 3px 18px #6e7ff344;
+            padding: 10px;
+            transition: background 0.18s, box-shadow 0.18s;
+        }
+
+        #toolSection .btn:hover,
+        #toolSection .btn:focus {
+            background: var(--btn-grad-hover);
+            color: #fff;
+        }
+
+        #toolSection h3 {
+            color: var(--blue-feature);
+        }
+
+        #toolSection .tool-user-example {
+            background: #f8fbff !important;
+            color: var(--blue-main);
+            border: none;
+            box-shadow: 0 2px 9px #2ad0fd22;
+        }
+
+        #toolSection ul {
+            padding-left: 1.2em;
+            margin-bottom: 0.5em;
+        }
+
+        #toolSection li {
+            margin-bottom: .25em;
+            font-size: .97em;
+            color: #3a4d6d;
+        }
+
+        /* Footer */
+        .footer-custom {
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            font-size: 1rem;
+            padding: 1.3rem 0 1.1rem 0;
+            text-align: center;
+            letter-spacing: 0.3px;
+            border-top: 1.5px solid #e4eaf3;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="bi bi-receipt"></i>
+                    InvoiceGen
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">FAQ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Pricing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn-sign" href="#">Sign In / Sign Up</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="navbar-spacer"></div>
+    </header>
+
+    <main class="main_section">
+        <section class="intro-section section-inner">
+            <h1>AI Invoice Generator — Fast, Smart & Professional</h1>
+            <p>
+                Experience the next generation of invoicing.
+                Our AI-powered tool turns your words into perfect, ready-to-send invoices.
+                Speak or type, customize on the fly, and get paid faster.
+            </p>
+            <a href="{{ url_for('invoice_tool') }}" class="btn btn-cta shadow">Get Started Free</a>
+        </section>
+
+        <section class="features-section section-inner">
+            <div class="features-stepper">
+                <div class="feature-step">
+                    <div class="step-icon"><i class="bi bi-mic-fill"></i></div>
+                    <div class="step-title">Voice & Text Input</div>
+                    <div class="step-desc">
+                        Speak or type your invoice details — InvoiceGen adapts instantly.
+                    </div>
+                </div>
+                <div class="feature-step">
+                    <div class="step-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+                    <div class="step-title">Live Invoice Preview</div>
+                    <div class="step-desc">
+                        Instantly see your invoice as you create it. Edit, tweak, and perfect in real time.
+                    </div>
+                </div>
+                <div class="feature-step">
+                    <div class="step-icon"><i class="bi bi-palette2"></i></div>
+                    <div class="step-title">Custom Branding</div>
+                    <div class="step-desc">
+                        Add your logo, choose colors, and personalize every invoice for your brand.
+                    </div>
+                </div>
+                <div class="feature-step agent">
+                    <div class="step-icon"><i class="bi bi-robot"></i></div>
+                    <div class="step-title">AI Invoice Agent</div>
+                    <div class="step-desc">
+                        After creating your invoice, the agent keeps the PDF safe, asks for your client's email, and
+                        sends it directly for you.
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Tool Section -->
+        <section id="toolSection" class="tool-section section-inner py-5">
+            <div class="container d-flex justify-content-center align-items-center" style="min-height:340px;">
+                <div class="row g-0 shadow rounded-4 overflow-hidden" style="max-width: 760px; width:100%;">
+                    <!-- Left: User Input, Example, CTA -->
+                    <div class="col-md-7 p-4 p-md-5 d-flex flex-column justify-content-center">
+                        <div>
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="d-inline-flex justify-content-center align-items-center me-2"
+                                    style="width:38px;height:38px;background:var(--btn-grad);color:#fff;border-radius:50%;font-size:1.14rem;">
+                                    <i class="bi bi-pencil-square"></i>
+                                </span>
+                                <h3 class="mb-0"
+                                    style="font-weight:800; font-size:1.5rem; color:var(--blue-feature); letter-spacing:.2px;">
+                                    Make Your Invoice
+                                </h3>
+                            </div>
+                            <p style="color:#3a4d6d;font-size:1rem; margin-bottom:.7rem;">
+                                Just describe what you want, and get your invoice in seconds.
+                            </p>
+                            <div class="tool-user-example rounded p-2 mb-3" style="font-size:1rem;">
+                                <div style="color:var(--blue-main);font-weight:600;">
+                                    <i class="bi bi-person-circle me-1"></i>You
+                                </div>
+                                <div>Invoice for <b>$900</b> logo design to <b>Fatima Enterprises</b>, due next Monday.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cta-area mt-2">
+                            <button class="btn tool-access-btn" onclick="goToTool()">
+                                <i class="bi bi-lightning-charge-fill"></i>
+                                <span>Generate Invoice</span>
+                            </button>
+                            <div class="text-center mt-2" style="font-size:1.01rem; color:#3a4d6d; font-weight:600;">
+                                One click. Instantly ready to send.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right: Agent Info -->
+                    <div class="col-md-5 d-flex flex-column justify-content-center align-items-center p-4"
+                        style="background:transparent;border-left:2px solid var(--card-border);">
+                        <span class="d-inline-flex align-items-center justify-content-center mb-2"
+                            style="width:40px;height:40px;background:var(--btn-grad);color:#fff;border-radius:50%;font-size:1.23rem;box-shadow:0 1px 4px #2ad0fd22;border:2px solid var(--card-border);">
+                            <i class="bi bi-robot"></i>
+                        </span>
+                        <div
+                            style="font-weight:900; color:var(--blue-feature); font-size:1.07rem; margin-bottom:.2rem;">
+                            Meet Your Helper
+                        </div>
+                        <div style="font-size:1rem; color:var(--blue-main); text-align:center; line-height:1.5;">
+                            <span style="color:var(--blue-feature); font-weight:700;">
+                                How does it work?
+                            </span>
+                            <ul class="list-unstyled mt-2 mb-1" style="font-size:.97rem; color:#3a4d6d;">
+                                <li><i class="bi bi-check-circle-fill" style="color:var(--blue-feature);"></i> 1. Create
+                                    your invoice above — it's fast and easy.</li>
+                                <li><i class="bi bi-check-circle-fill" style="color:var(--blue-feature);"></i> 2. Enter
+                                    your client's email when prompted.</li>
+                                <li><i class="bi bi-check-circle-fill" style="color:var(--blue-feature);"></i> 3. Your
+                                    PDF is securely sent by your agent.</li>
+                            </ul>
+                            <span style="color:var(--blue-main);font-weight:600;">
+                                Try now — effortless invoicing starts here!
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="footer-custom">
+        &copy; 2025 InvoiceGen. All rights reserved.
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </main>
+
+    <Script>
+      function goToTool() {
+  window.location.href = "{{ url_for('invoice_tool') }}";
+}
+    </Script>
+</body>
+
+</html>
