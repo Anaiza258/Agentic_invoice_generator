@@ -1,8 +1,8 @@
 {
   "builds": [
-    { "src": "app_gemini.py", "use": "@vercel/python" }
+    { "src": "api/index.py", "use": "@vercel/python" }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "app_gemini.py" }
+    { "src": "/(.*)", "dest": "api/index.py" }
   ]
 }
