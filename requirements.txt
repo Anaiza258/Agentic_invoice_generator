@@ -6,3 +6,5 @@ openai
 reportlab 
 langgraph
 langchain
+clerk-backend-api
+gunicorn

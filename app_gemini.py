@@ -17,29 +17,19 @@ from pydantic import BaseModel
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
-from langgraph.graph import StateGraph, END
-from langchain_core.runnables import RunnableLambda
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
-from langchain_core.tools import tool
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_groq import ChatGroq
-from langgraph.checkpoint.memory import MemorySaver
-from langchain_openai import ChatOpenAI
 from langchain.agents import Tool
-
+from clerk_backend_api import Clerk
 
 
 # Load environment variables
 load_dotenv()
 
-
-# api_key = os.getenv("GROQ_API_KEY")
-api_key = os.getenv("OPENROUTER_API_KEY")
 EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
 APP_PASSWORD = os.getenv("APP_PASSWORD")
 
-print("🔍 API Key Loaded:", api_key[:8], "****", api_key[-4:] if api_key else "❌ NOT FOUND")
-
+# Initialize Clerk
+clerk = Clerk(os.getenv("CLERK_SECRET_KEY"))
 
 # Flask setup and ensure upload folder exists
 app = Flask(__name__)
@@ -50,10 +40,90 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def index():
     return render_template('index.html')
 
+# Middleware-like decorator for auth 
+def require_auth(func):
+    def wrapper(*args, **kwargs):
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
+            return jsonify({"error": "Missing Authorization header"}), 401
+
+        token = auth_header.split(" ")[1]  # Bearer <token>
+
+        try:
+            session = clerk.sessions.verify_session(token)
+            request.user = session["user_id"]  # save user ID
+            return func(*args, **kwargs)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 401
+
+    wrapper.__name__ = func.__name__
+    return wrapper
+
+@app.route("/protected")
+@require_auth
+def protected():
+    return jsonify({
+        "message": "You are logged in!",
+        "user_id": request.user
+    })
+
 @app.route('/invoice_tool')
 def invoice_tool():
     return render_template('tool.html')
+ 
 
+@app.route("/pricing")
+def pricing():
+    return render_template("pricing.html")
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
+# Submit Contact (email transfer)
+@app.route('/submit-contact', methods=['POST'])
+def submit_contact():
+    data = request.get_json()
+    name = data.get('name', '')
+    email = data.get('email', '')
+    subject = data.get('subject', 'No Subject')  
+    message = data.get('message', '')
+
+    if not name or not email or not message:
+        return jsonify({"error": "Name, email, and message are required."}), 400
+
+    # Email content
+    email_subject = f"New Contact Form Submission: {subject}"
+    email_body = f"""
+    You have received a new message from your portfolio contact form.\n\n
+    Name: {name}\n
+    Email: {email}\n
+    Subject: {subject}\n
+    Message:\n{message}\n\n
+    Timestamp: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+    """
+
+    try:
+        # Create the email
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_ADDRESS
+        msg['To'] = EMAIL_ADDRESS  
+        msg['Subject'] = email_subject
+        msg.attach(MIMEText(email_body, 'plain'))
+
+        # Connect to Gmail SMTP server and send the email
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls()  # Secure the connection
+            server.login(EMAIL_ADDRESS, APP_PASSWORD) 
+            server.send_message(msg) 
+
+        return jsonify({"success": True, "message": "Thank you for your message! I will respond shortly."})
+
+    except Exception as e:
+        return jsonify({"error": f"An error occurred while sending the email: {str(e)}"}), 500
+
+
+# upload audio  file
 @app.route('/upload_audio', methods=['POST'])
 def upload_audio():
     try:
@@ -560,269 +630,7 @@ def generate_detailed_pdf(invoice_data):
         return ""
 
 
-
-# ---------------- EMAIL TOOL -------------------
-def send_invoice_email_tool(info: dict) -> str:
-    invoice_id = info.get("invoice_id")
-    recipient_email = info.get("recipient_email")
-
-    if not invoice_id or not recipient_email:
-        return "❌ Missing invoice ID or recipient email."
-
-    pdf_path = os.path.join("static", "uploads", f"{invoice_id}")
-    if not os.path.exists(pdf_path):
-        return f"❌ Invoice PDF not found: {pdf_path}"
-
-    subject = f"Your Invoice {invoice_id}"
-    body = f"""Dear Client,
-
-Please find your invoice attached.
-
-Let me know if you have any questions.
-
-Best regards,
-Anaiza"""
-
-    msg = MIMEMultipart()
-    msg['From'] = EMAIL_ADDRESS
-    msg['To'] = recipient_email
-    msg['Subject'] = subject
-    msg.attach(MIMEText(body, 'plain'))
-
-    try:
-        with open(pdf_path, "rb") as f:
-            from email.mime.application import MIMEApplication
-            part = MIMEApplication(f.read(), _subtype="pdf")
-            part.add_header('Content-Disposition', 'attachment', filename=f"{invoice_id}.pdf")
-            msg.attach(part)
-
-        with smtplib.SMTP('smtp.gmail.com', 587) as server:
-            server.starttls()
-            server.login(EMAIL_ADDRESS, APP_PASSWORD)
-            server.send_message(msg)
-
-        return f"✅ Invoice sent successfully to {recipient_email}"
-    except Exception as e:
-        return f"❌ Failed to send email: {str(e)}"
-    
-@tool
-def send_invoice_email(invoice_id: str, recipient_email: str) -> str:
-    """Send invoice via email."""
-    return send_invoice_email_tool({"invoice_id": invoice_id, "recipient_email": recipient_email})
-
-llm = ChatOpenAI(
-    model="meta-llama/llama-4-scout", 
-    base_url="https://openrouter.ai/api/v1",
-    api_key=api_key,  
-    temperature=0.2
-)
-
-# ---------------- LangGraph Setup -------------------
-class ToolInvocation(TypedDict):
-    tool: str
-    tool_input: Dict[str, Any]
-    id: str
-
-class AgentState(TypedDict, total=False):
-    messages: List
-    invocation: ToolInvocation
-    memory: Dict[str, Any]
-
-# LLM Node
-def call_llm(state: AgentState) -> AgentState:
-    messages = state["messages"]
-    memory = state.get("memory", {})
-
-    last_user = next((m for m in reversed(messages) if isinstance(m, HumanMessage)), None)
-    if last_user and last_user.content:
-        user_text = last_user.content.strip().lower()
-
-        # ✅ Detect and store valid email
-        email_match = re.search(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", user_text)
-        if email_match:
-            memory["recipient_email"] = email_match.group()
-
-        # ✅ Store confirmation flag
-        if any(p in user_text for p in ["yes", "send", "confirm", "go ahead", "please send"]):
-            memory["confirmation"] = True
-            memory.pop("refused", None)  
-
-        # ✅ Store refusal flag
-        if any(p in user_text for p in ["no", "don't", "cancel", "not now", "later", "stop"]):
-            memory["refused"] = True
-
-    try:
-        response = llm.invoke(messages)
-        new_state = {"messages": messages + [response], "memory": memory}
-        if memory.get("recipient_email") and memory.get("confirmation"):
-            new_state["invocation"] = {
-        "tool": "send_invoice_email",
-        "tool_input": {
-            "invoice_id": extract_invoice_id(messages),
-            "recipient_email": memory["recipient_email"]
-        },
-        "id": str(uuid.uuid4())
-    }
-        return new_state
-
-    except Exception as e:
-        print("🚨 LLM Invocation Error:", str(e))
-        return {"messages": messages, "memory": memory}
-    
-def extract_invoice_id(messages: List) -> str:
-    for msg in messages:
-        if isinstance(msg, SystemMessage):
-            match = re.search(r"Invoice ID is ([\w\-\.]+)", msg.content)
-            if match:
-                return match.group(1)
-    return "INV001"
-
-
-# Tool Node
-def call_tool(state: AgentState) -> AgentState:
-    memory = state.get("memory", {})
-    messages = state["messages"]
-    tool_input = state.get("invocation", {}).get("tool_input", {})
-
-    recipient_email = memory.get("recipient_email") or tool_input.get("recipient_email")
-    invoice_id = tool_input.get("invoice_id")
-
-    if not recipient_email:
-        return {
-            "messages": messages + [AIMessage(content="❌ Email missing.")],
-            "memory": memory
-        }
-
-    result = send_invoice_email_tool({
-        "invoice_id": invoice_id,
-        "recipient_email": recipient_email
-    })
-
-    memory["sent"] = True
-
-    return {
-    "messages": messages + [
-        ToolMessage(content=result, tool_call_id=state["invocation"]["id"]),
-        AIMessage(content=result)  # ✅ Always show real result, not hardcoded ❌
-    ],
-    "memory": memory
-}
-
-
-
-workflow = StateGraph(AgentState)
-workflow.add_node("agent", RunnableLambda(call_llm))
-workflow.add_node("tool", RunnableLambda(call_tool))
-
-# Router
-def route(state: AgentState) -> str:
-    memory = state.get("memory", {})
-    messages = state["messages"]
-
-    # 🛑 0. If already sent → stop
-    if memory.get("sent"):
-        print("✅ Invoice already sent. Ending.")
-        return "end"
-    
-    # 🛑 1. If user refused
-    if memory.get("refused"):
-        print("🛑 User refused. Stopping.")
-        return "end"
-
-    # ✅ 2. If ready to send invoice
-    if memory.get("recipient_email") and memory.get("confirmation"):
-        print("✅ Email + Confirmation → Proceed to tool.")
-
-        invoice_id = None
-        for msg in messages:
-            if isinstance(msg, SystemMessage):
-                match = re.search(r"Invoice ID is ([\w\-\.]+)", msg.content)
-                if match:
-                    invoice_id = match.group(1)
-                    break
-
-        if invoice_id:
-            state["invocation"] = {
-                "tool": "send_invoice_email",
-                "tool_input": {
-                    "invoice_id": invoice_id,
-                    "recipient_email": memory["recipient_email"]
-                },
-                "id": str(uuid.uuid4())
-            }
-        else:
-            print("⚠️ Invoice ID not found in system message.")
-
-        return "tool"
-
-    # ❌ Fallback: too many messages — put this **after tool condition**
-    if len(messages) > 20:
-        print("❌ Too many messages. Ending conversation.")
-        return "end"
-
-    # 🧠 Fallback if user is passive
-    last = messages[-1]
-    if isinstance(last, HumanMessage):
-        msg = last.content.lower().strip()
-        if msg in ["no", "not now", "cancel", "stop", "don't send", "later"]:
-            return "end"
-
-    return "agent"
-
-
-workflow.set_entry_point("agent")
-workflow.add_conditional_edges("agent", route)
-workflow.add_edge("tool", "end")
-workflow.add_node("end", lambda state: state)
-workflow.set_finish_point("end")
-
-ag_executor = workflow.compile()
-
-
-@app.route('/chat_agent', methods=['POST'])
-def chat_agent():
-    try:
-        data = request.get_json()
-        print("🟨 Incoming Data:", data)
-
-        invoice_id = data.get("invoice_id", "INV001")
-        user_msg = data.get("message", "").strip()
-
-        if not user_msg:
-            return jsonify({"response": "Hi there! Would you like me to send this invoice via email?"})
-
-        state = {"messages": [
-            SystemMessage(content=f"""You are an agent that will send invoice via email. Please be professional and follow these rules:
-- Confirm user wants to send invoice.
-- Ask for a valid email email address it should be either business or personal no restriction there.
-- When email is received immediately call send invoice tool to send email.
-- Reject placeholder/test emails.
-- Be polite and professional throughout.
-Invoice ID is {invoice_id}."""),
-            HumanMessage(content=user_msg)
-        ],''
-    "memory": data.get("memory", {}) }
-
-        print("🟦 State Sent to Agent:", state)
-        result = ag_executor.invoke(state)
-        print("🟩 Agent Result:", result)
-
-        last_msg = result["messages"][-1].content.lower()
-        # If tool succeeded and response already contains confirmation
-        if "✅" in last_msg or "invoice sent successfully" in last_msg:
-            return jsonify({"response": result["messages"][-1].content})
-
-# If user declined to send (agent responded accordingly)
-        if any(p in last_msg for p in ["no problem", "let me know", "not sending", "cancelled", "okay, not now"]):
-            return jsonify({"response": result["messages"][-1].content})
-
-# Otherwise, continue conversation
-        output = result["messages"][-1].content
-        return jsonify({"response": output,  "memory": result.get("memory", {})})
-
-    except Exception as e:
-        print("❌ Exception:", str(e))
-        return jsonify({"error": str(e)}), 500
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 8000))  # Koyeb provides PORT dynamically
+    app.run(host="0.0.0.0", port=port)
+    # app.run(debug=True)
