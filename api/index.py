@@ -33,6 +33,7 @@ clerk = Clerk(os.getenv("CLERK_SECRET_KEY"))
 
 # Flask setup and ensure upload folder exists
 app = Flask(__name__)
+
 UPLOAD_FOLDER = "static/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -631,6 +632,5 @@ def generate_detailed_pdf(invoice_data):
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 8000))  # Koyeb provides PORT dynamically
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=5000)
     # app.run(debug=True)
