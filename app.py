@@ -7,19 +7,18 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import json
 import re
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from PIL import Image  
-from reportlab.pdfgen import canvas
-import smtplib
-from typing import Any, Dict, List, TypedDict, Optional
-from pydantic import BaseModel
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.agents import Tool
-from clerk_backend_api import Clerk
+# from reportlab.lib.pagesizes import letter
+# from reportlab.pdfgen import canvas
+# from PIL import Image  
+# from reportlab.pdfgen import canvas
+# import smtplib
+# from typing import Any, Dict, List, TypedDict, Optional
+# from pydantic import BaseModel
+# from email.mime.multipart import MIMEMultipart
+# from email.mime.text import MIMEText
+# from email.mime.application import MIMEApplication
+# from langchain_google_genai import ChatGoogleGenerativeAI
+# from clerk_backend_api import Clerk
 
 
 # Load environment variables
