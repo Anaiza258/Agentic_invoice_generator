@@ -93,7 +93,7 @@ def submit_contact():
     # Email content
     email_subject = f"New Contact Form Submission: {subject}"
     email_body = f"""
-    You have received a new message from your portfolio contact form.\n\n
+    You have received a new message from your Invoice generator contact form.\n\n
     Name: {name}\n
     Email: {email}\n
     Subject: {subject}\n
