@@ -171,9 +171,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   
-
-// Contact page 
-  document.addEventListener("DOMContentLoaded", function () {
+  // Contact page
+document.addEventListener("DOMContentLoaded", function () {
   const contactFormContainer = document.querySelector(".contact-form");
   const originalContactFormHTML = contactFormContainer
     ? contactFormContainer.innerHTML
@@ -187,15 +186,15 @@ document.addEventListener("DOMContentLoaded", function () {
         function (e) {
           e.preventDefault();
 
+          // Disable the submit button + show spinner
           const submitButton = contactForm.querySelector("button[type='submit']");
           if (submitButton) {
-            // Immediately disable the button
             submitButton.disabled = true;
-            // Change text to "Sending..." with a spinner animation using Bootstrap spinner classes
-            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Sending...';
+            submitButton.innerHTML =
+              '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Sending...';
           }
 
-          // Gather form data into object
+          // Gather form data
           const formData = new FormData(contactForm);
           const dataObj = {
             name: formData.get("name"),
@@ -204,6 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
             message: formData.get("message"),
           };
 
+          // Send request
           fetch("/submit-contact", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -211,10 +211,16 @@ document.addEventListener("DOMContentLoaded", function () {
           })
             .then((response) => response.json())
             .then((data) => {
+              if (data.error) {
+                // Backend returned error JSON
+                throw new Error(data.error);
+              }
+
               let feedback =
                 data.message ||
                 "Thank you for your message! We will respond shortly.";
 
+              // Replace container with success message
               contactFormContainer.innerHTML = `
                 <div class="form-submitted">
                   <span class="material-symbols-rounded success-icon">check_circle</span>
@@ -223,7 +229,8 @@ document.addEventListener("DOMContentLoaded", function () {
                   <button type="button" class="send-another-btn">Send Another Message</button>
                 </div>
               `;
-              // Handler for "Send Another Message" button
+
+              // Restore form when "Send Another Message" is clicked
               document
                 .querySelector(".send-another-btn")
                 .addEventListener("click", () => {
@@ -232,14 +239,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             })
             .catch((error) => {
+              console.error("Error submitting contact form:", error);
+
               contactFormContainer.innerHTML = `
                 <div class="form-submitted">
                   <span class="material-symbols-rounded error-icon">error</span>
                   <h3>Error</h3>
-                  <p>There was an error sending your message. Please try again later.</p>
+                  <p>${
+                    error.message ||
+                    "There was an error sending your message. Please try again later."
+                  }</p>
                   <button type="button" class="send-another-btn">Try Again</button>
                 </div>
               `;
+
+              // Retry handler
               document
                 .querySelector(".send-another-btn")
                 .addEventListener("click", () => {
@@ -248,10 +262,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             });
         },
-        { once: true }
+        { once: true } // Prevent multiple submits
       );
     }
   }
 
-  if (contactFormContainer) attachContactFormHandler();
+  if (contactFormContainer) {
+    attachContactFormHandler();
+  }
 });
