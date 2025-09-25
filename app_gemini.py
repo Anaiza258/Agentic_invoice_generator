@@ -12,11 +12,8 @@ from reportlab.pdfgen import canvas
 from PIL import Image  
 from reportlab.pdfgen import canvas
 import smtplib
-from typing import Any, Dict, List, TypedDict, Optional
-from pydantic import BaseModel
-from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
 from clerk_backend_api import Clerk
 
 
