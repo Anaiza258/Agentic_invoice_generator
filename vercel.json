@@ -1,11 +1,15 @@
 {
-  "functions": {
-    "api/index.py": {
-      "runtime": "python3.10",
-      "maxDuration": 60
+
+  "builds": [
+    { 
+      "src": "app_gemini.py",
+      "use": "@vercel/node"
     }
-  },
+  ],
   "routes": [
-    { "src": "/(.*)", "dest": "api/index.py" }
+    { 
+      "src": "/(.*)", 
+      "dest": "/app_gemini.py" 
+    }
   ]
 }
