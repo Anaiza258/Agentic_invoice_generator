@@ -17,13 +17,24 @@ from pydantic import BaseModel
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
+from langgraph.graph import StateGraph, END
+from langchain_core.runnables import RunnableLambda
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
+from langchain_core.tools import tool
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
+from langgraph.checkpoint.memory import MemorySaver
+from langchain_openai import ChatOpenAI
+from langchain.agents import Tool
 from clerk_backend_api import Clerk
 
 
 # Load environment variables
 load_dotenv()
 
+
+# api_key = os.getenv("GROQ_API_KEY")
+api_key = os.getenv("OPENROUTER_API_KEY") 
 EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
 APP_PASSWORD = os.getenv("APP_PASSWORD")
 
@@ -32,7 +43,6 @@ clerk = Clerk(os.getenv("CLERK_SECRET_KEY"))
 
 # Flask setup and ensure upload folder exists
 app = Flask(__name__)
-
 UPLOAD_FOLDER = "static/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -630,3 +640,8 @@ def generate_detailed_pdf(invoice_data):
         return ""
 
 
+if __name__ == '__main__':
+    
+    port = int(os.environ.get("PORT", 8000))  # Koyeb provides PORT dynamically
+    app.run(host="0.0.0.0", port=port)
+    # app.run(debug=True)
