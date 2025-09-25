@@ -2,14 +2,14 @@
 
   "builds": [
     { 
-      "src": "app_gemini.py",
+      "src": "app.py",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     { 
       "src": "/(.*)", 
-      "dest": "app_gemini.py" 
+      "dest": "app.py" 
     }
   ]
 }
