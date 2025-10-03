@@ -8,3 +8,4 @@ langgraph
 langchain
 clerk-backend-api
 gunicorn
+supabase

@@ -6,20 +6,20 @@
         "payment_status": "UNPAID",
         "currency": "",
         "issuer_info": {
-            "name": "Issuer Name [ADD]",
-            "contact": "Issuer Contact [ADD]",
-            "address": "Issuer Address [ADD]",
-            "email": "issuer@example.com [ADD]"
+            "name": "Your Name [MISSING]",
+            "contact": "Your Contact [MISSING]",
+            "address": "Your Address [MISSING]",
+            "email": "Your Email [MISSING]"
         },
         "client": {
-            "name": "Client Name [ADD]",
-            "contact": "Client Contact [ADD]",
-            "address": "Client Address [ADD]",
-            "email": "client@example.com [ADD]"
+            "name": "Client Name [MISSING]",
+            "contact": "Client Contact [MISSING]",
+            "address": "Client Address [MISSING]",
+            "email": "Client Email [MISSING]"
         },
         "serviceDetails": [
             {
-                "description": "Service/Product 1 [ADD]",
+                "description": "Service/Product 1 [MISSING]",
                 "quantity": 1,
                 "unitPrice": "0",
                 "totalPrice": "0.00"
@@ -31,8 +31,8 @@
         "taxAmount": "",
         "taxOption": "percentage",
         "totalAmount": "0.00",
-        "paymentMethod": "Payment Method [ADD]",
-        "endNote": "End Note [ADD]",
+        "paymentMethod": "Payment Method [MISSING]",
+        "endNote": "End Note [MISSING]",
         "logo": ""
     }
 }
