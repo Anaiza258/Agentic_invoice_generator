@@ -2,6 +2,9 @@
 from flask import Blueprint, request, jsonify
 import hmac, hashlib, os
 from supabase_client import create_customer
+from dotenv import load_dotenv
+
+load_dotenv()
 
 payments_bp = Blueprint("payments", __name__)
 
