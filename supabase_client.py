@@ -11,12 +11,13 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def create_customer(email: str, plan: str, status: str, license_key: str = None):
     """
-    Save customer details into Supabase
+    Insert or update customer details into Supabase
     """
-    response = supabase.table("customers").insert({
+    response = supabase.table("customers").upsert({
         "email": email,
         "plan": plan,
         "status": status,
         "license_key": license_key
-    }).execute()
+    }, on_conflict=["email"]).execute()
     return response
+

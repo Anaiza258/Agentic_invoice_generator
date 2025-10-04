@@ -20,19 +20,17 @@ from supabase import create_client, Client
 from payments import payments_bp
 
 
-
 # Load environment variables
 load_dotenv()
 
-
-# api_key = os.getenv("GROQ_API_KEY")
-api_key = os.getenv("OPENROUTER_API_KEY") 
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
 APP_PASSWORD = os.getenv("APP_PASSWORD")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 
 # Initialize Clerk
 clerk = Clerk(os.getenv("CLERK_SECRET_KEY"))
@@ -155,8 +153,9 @@ def upload_audio():
             return jsonify({"error": transcript}), 500
 
         invoice_content = generate_invoice(transcript)
-        if "error" in invoice_content:
-            return jsonify({"error": invoice_content}), 500
+        if isinstance(invoice_content, dict) and "error" in invoice_content:
+            # Unwrap the error message so that a plain string is returned.
+            return jsonify({"error": str(invoice_content["error"])}), 500
 
         print("Generated Invoice Content:")
         print(invoice_content)
@@ -166,7 +165,9 @@ def upload_audio():
             "invoice_content": invoice_content
         })
     except Exception as e:
+        print(f"Error in upload_audio: {str(e)}")
         return jsonify({"error": "Something went wrong", "details": str(e)}), 500
+    
 
 @app.route('/generate_invoice_text', methods=['POST'])
 def generate_invoice_text():
@@ -176,8 +177,8 @@ def generate_invoice_text():
             return jsonify({"error": "No text provided"}), 400
 
         invoice_content = generate_invoice(invoice_text)
-        if "error" in invoice_content:
-            return jsonify({"error": invoice_content}), 500
+        if isinstance(invoice_content, dict) and "error" in invoice_content:
+            return jsonify({"error": str(invoice_content["error"])}), 500
 
         print("Generated Invoice Content from text input:")
         print(invoice_content)
