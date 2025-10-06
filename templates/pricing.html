@@ -297,6 +297,49 @@
     .footer hr {
       border-color: rgba(255, 255, 255, 0.08);
     }
+    .payment-notice {
+  max-width: 750px;
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease-in-out;
+}
+.payment-notice:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 213, 255, 0.3);
+}
+.text-gradient {
+  background: linear-gradient(90deg, #61c0ff, #ff3cff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.beta-access-card {
+  max-width: 850px;
+  backdrop-filter: blur(16px);
+  background: linear-gradient(145deg, rgba(20, 20, 20, 0.7), rgba(40, 40, 40, 0.4));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 0 25px rgba(0, 213, 255, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+.beta-access-card:hover {
+  box-shadow: 0 0 35px rgba(0, 213, 255, 0.25);
+  transform: translateY(-4px);
+}
+.beta-btn {
+  background: linear-gradient(90deg, #61c0ff, #ff3cff);
+  border: none;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+.beta-btn:hover {
+  background: linear-gradient(90deg, #ff3cff, #61c0ff);
+  transform: scale(1.05);
+}
+
   </style>
 </head>
 
@@ -355,6 +398,17 @@
     <p class="lead">Choose a plan that fits your invoicing needs</p>
   </div>
 
+
+  <div class="container text-center mt-5">
+  <div class="payment-notice mx-auto p-3 p-md-4">
+    <i class="bi bi-info-circle-fill text-info me-2"></i>
+    <span class="fw-semibold text-light">
+      Payments are currently in <span class="text-gradient">beta mode</span>. 
+      Enjoy full access — paid plans will be available soon.
+    </span>
+  </div>
+</div>
+
   <!-- Pricing Cards Section -->
   <main class="container mt-5 mb-5">
     <div class="row justify-content-center g-4">
@@ -364,7 +418,9 @@
           <h4 class="pricing-title">Free</h4>
           <h1 class="pricing-price">$0</h1>
           <ul class="list-unstyled mt-3 mb-4">
-            <li>5 invoices (one-time)</li>
+            <li>Voice to Invoice and text query</li>
+            <li>3 invoices (one-time)</li>
+            <li>Faster AI response time</li>
             <li>PDF export</li>
             <li>Basic invoice template</li>
           </ul>
@@ -379,14 +435,17 @@
           <div class="badge">Most Popular</div>
           <h4 class="pricing-title">Pro</h4>
           <h1 class="pricing-price">$4.99 <small>/mo</small></h1>
+          <p class="text-info small mb-2">Best for freelancers & creators</p>
           <ul class="list-unstyled mt-3 mb-4">
+            <li>Voice to Invoice and text query</li>
             <li>Unlimited invoices</li>
+            <li>Faster AI response time</li>
             <li>PDF export</li>
             <li>Multiple invoice templates</li>
           </ul>
           <!-- Pro Plan -->
           <button class="pricing-btn w-100"
-            onclick="window.location.href='https://invoice-generator.lemonsqueezy.com/buy/0300e8a9-18a4-43ec-86a5-798b16da85a4'">
+             onclick="showBetaMessage('Pro Plan')">
             Get Started
           </button>
 
@@ -398,20 +457,106 @@
         <div class="pricing-card">
           <h4 class="pricing-title">Premium</h4>
           <h1 class="pricing-price">$40 <small>/yr</small></h1>
+          <p class="text-warning small mb-2">Ideal for freelancers, teams & businesses</p>
           <ul class="list-unstyled mt-3 mb-4">
+            <li>Voice to Invoice and text query</li>
             <li>Unlimited invoices</li>
             <li>PDF export</li>
+            <li>Faster AI response time</li>
             <li>All Pro features</li>
             <li>Advanced templates & customization</li>
           </ul>
           <button class="pricing-btn w-100"
-            onclick="window.location.href='https://invoice-generator.lemonsqueezy.com/buy/e038d9dd-2f99-4211-8eb1-cfa2c6050353'">
+            onclick="showBetaMessage('Pro Plan')">
             Go Premium
           </button>
         </div>
       </div>
     </div>
   </main>
+
+<!--  Beta Access Section -->
+<section class="container text-center my-5">
+  <div class="beta-access-card mx-auto p-5">
+    <h2 class="fw-bold mb-3 text-gradient">🚀 Join the Beta Program</h2>
+<p class="text-secondary mb-4">
+  Be among the first <span class="fw-semibold text-light">founding users</span> of InvoCue and 
+  unlock <span class="text-light">Pro</span> & <span class="text-light">Premium</span> perks early.  
+  Lifetime rewards for early sign-ups 🎁
+</p>
+    <button class="btn beta-btn px-4 py-2 fw-semibold rounded-pill" data-bs-toggle="modal" data-bs-target="#betaAccessModal">
+  Get Early Access
+</button>
+    <p class="small text-secondary mt-3 mb-0">
+      *Early users will get lifetime perks on launch.
+    </p>
+  </div>
+</section>
+
+<!-- Beta Access Modal -->
+<div class="modal fade" id="betaAccessModal" tabindex="-1" aria-labelledby="betaAccessModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow-lg" 
+         style="
+           background: rgba(255, 255, 255, 0.85);
+           backdrop-filter: blur(15px);
+           border-radius: 20px;
+           color: #1a1a1a;
+           border: 1px solid rgba(0,0,0,0.05);
+         ">
+      <!-- Header -->
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="betaAccessModalLabel" 
+            style="background: linear-gradient(90deg, #61c0ff, #ff3cff); 
+                   -webkit-background-clip: text; 
+                   -webkit-text-fill-color: transparent;">
+          🚀 Request Beta Access
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body px-4">
+        <p class="text-muted mb-4">
+          Fill out this quick form and we’ll contact you as soon as your early access is ready.
+        </p>
+
+        <form id="betaAccessForm">
+          <div class="mb-3">
+            <label for="name" class="form-label fw-semibold text-dark">Full Name</label>
+            <input type="text" class="form-control border-0 shadow-sm py-2" 
+                   style="border-radius: 10px; background: rgba(255,255,255,0.9);" 
+                   id="name" placeholder="Enter your name" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label fw-semibold text-dark">Email Address</label>
+            <input type="email" class="form-control border-0 shadow-sm py-2"
+                   style="border-radius: 10px; background: rgba(255,255,255,0.9);" 
+                   id="email" placeholder="Enter your email" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="message" class="form-label fw-semibold text-dark">Your Message (optional)</label>
+            <textarea class="form-control border-0 shadow-sm" 
+                      style="border-radius: 10px; background: rgba(255,255,255,0.9);" 
+                      id="message" rows="3" placeholder="Write something..."></textarea>
+          </div>
+
+          <button type="submit" 
+                  class="btn w-100 py-2 fw-semibold rounded-pill"
+                  style="background: linear-gradient(90deg, #61c0ff, #ff3cff); 
+                         color: #fff; border: none; 
+                         box-shadow: 0 6px 20px rgba(122, 60, 255, 0.25);
+                         transition: transform 0.2s ease;">
+            Submit Request
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
   <!-- Footer Section -->
@@ -472,6 +617,80 @@
     src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js">
     </script>
   <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
+  
 
+<script>
+
+// alert for pro/premium plans
+  function showBetaMessage(plan) {
+  const msg = `${plan} payments are currently in beta mode.\nPlease request early access to activate your plan.`;
+  alert(msg);
+}
+
+// Button hover effect
+document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('mouseenter', () => btn.style.transform = 'scale(1.03)');
+    btn.addEventListener('mouseleave', () => btn.style.transform = 'scale(1)');
+  });
+
+
+document.getElementById("betaAccessForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const message = document.getElementById("message").value.trim();
+
+  // Disable button while submitting
+  const button = this.querySelector("button");
+  const originalText = button.innerText;
+  button.innerText = "Submitting...";
+  button.disabled = true;
+
+  try {
+    const response = await fetch("/submit-contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, message })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Success message
+      Swal.fire({
+        icon: "success",
+        title: "Request Submitted 🎉",
+        text: data.message || "Thank you for your message! We'll contact you soon.",
+        confirmButtonColor: "#6c63ff"
+      });
+      document.getElementById("betaAccessForm").reset();
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: data.error || "Something went wrong. Please try again later.",
+        confirmButtonColor: "#ff4b5c"
+      });
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Server Error",
+      text: "Unable to send your request. Please try again later.",
+      confirmButtonColor: "#ff4b5c"
+    });
+  } finally {
+    // Re-enable button
+    button.innerText = originalText;
+    button.disabled = false;
+  }
+});
+</script>
+
+<!-- Include SweetAlert2 for nice alerts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+</body>
 </html>
