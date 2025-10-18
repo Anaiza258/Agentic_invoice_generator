@@ -164,6 +164,7 @@ async function goToTool() {
 }
 
 // ✅ FIRESTORE INTEGRATION: Save invoices after generation
+// ===================== SAVE INVOICE HANDLER =====================
 const saveBtn = document.getElementById("saveInvoiceBtn");
 if (saveBtn) {
   saveBtn.addEventListener("click", async function (event) {
@@ -174,66 +175,41 @@ if (saveBtn) {
     const formData = new FormData(form);
 
     try {
-      const response = await fetch("/save_invoice", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch("/save_invoice", { method: "POST", body: formData });
       const result = await response.json();
       hideLoader();
 
+      console.log("Invoice Save Result:", result);
+
       if (result.success && result.pdf_url) {
         try {
-          // ✅ Import Firebase dynamically
-          const { initializeApp } = await import(
-            "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"
-          );
+          // --- Firestore import & init ---
           const { getFirestore, collection, addDoc } = await import(
             "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"
           );
+          const db = window.firebaseDB || getFirestore();
 
-          // ✅ Firebase config
-          const firebaseConfig = {
-            apiKey: "AIzaSyCA9AFna15elyWCo7Yqy_UE5ShvzNxp6Ig",
-            authDomain: "invocue-ai-invoice-generator.firebaseapp.com",
-            projectId: "invocue-ai-invoice-generator",
-            storageBucket:
-              "invocue-ai-invoice-generator.firebasestorage.app",
-            messagingSenderId: "1000346396091",
-            appId: "1:1000346396091:web:11781359527366bdd3d09e",
-            measurementId: "G-1KPCS3GV9L",
-          };
-
-          const app = initializeApp(firebaseConfig);
-          const db = getFirestore(app);
-
-          const clerkUser = window.Clerk?.user;
-          const invoiceData = {
-            userId: clerkUser ? clerkUser.id : "anonymous",
-            userEmail: clerkUser
-              ? clerkUser.primaryEmailAddress?.emailAddress
-              : "guest",
+          // --- Save invoice to Firestore ---
+          await addDoc(collection(db, "invoices"), {
             pdfUrl: result.pdf_url,
             filename: result.pdf_url.split("/").pop(),
-            createdAt: new Date().toISOString(),
-          };
+            timestamp: new Date().toISOString(),
+          });
 
-          await addDoc(collection(db, "invoices"), invoiceData);
-          console.log("✅ Invoice saved to Firestore!");
-        } catch (fireErr) {
-          console.error("❌ Firestore save failed:", fireErr);
+          console.log("✅ Invoice saved successfully in Firestore!");
+        } catch (err) {
+          console.error("❌ Firestore save failed:", err);
         }
 
-        // ✅ Redirect
-        const redirectUrl = `/invoice_preview?pdf_url=${encodeURIComponent(
-          result.pdf_url
-        )}`;
+        // Redirect to preview
+        const redirectUrl = `/invoice_preview?pdf_url=${encodeURIComponent(result.pdf_url)}`;
         window.location.href = redirectUrl;
       } else {
         alert("Error generating invoice: " + (result.error || "Unknown error"));
       }
     } catch (err) {
       hideLoader();
-      console.error("❌ Save Invoice failed:", err);
+      console.error("Save Invoice failed:", err);
       alert("Network or server error while saving invoice.");
     }
   });
