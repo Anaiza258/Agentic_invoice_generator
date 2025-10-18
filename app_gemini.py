@@ -46,6 +46,10 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def index():
     return render_template('index.html')
 
+@app.route('/my_invoices')
+def my_invoices():
+    return render_template('my_invoices.html')
+
 # Middleware-like decorator for auth 
 def require_auth(func):
     def wrapper(*args, **kwargs):
