@@ -345,10 +345,9 @@ background: linear-gradient(90deg, #61c0ff 0%, #ff3cff 100%);
   <script src="static/script.js"></script>
   
   <script type="module">
-  // --- Import Firebase SDK modules ---
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import { 
-    getFirestore, collection, getDocs, addDoc 
+    getFirestore, collection, getDocs, query, where, orderBy 
   } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
   // --- Firebase Config ---
@@ -366,57 +365,71 @@ background: linear-gradient(90deg, #61c0ff 0%, #ff3cff 100%);
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // ✅ Expose Firestore globally (for use in script.js)
-  window.firebaseApp = app;
-  window.firebaseDB = db;
-  window.collection = collection;
-  window.getDocs = getDocs;
-  window.addDoc = addDoc;
-
-  // --- DOM element ---
   const invoiceList = document.getElementById("invoiceList");
 
-  // --- Fetch all invoices from Firestore ---
+  // --- Wait for Clerk to load ---
+  async function waitForClerkUser() {
+    return new Promise((resolve) => {
+      const check = () => {
+        if (window.Clerk && window.Clerk.user) resolve(window.Clerk.user);
+        else setTimeout(check, 300);
+      };
+      check();
+    });
+  }
+
+  // --- Load invoices for the current Clerk user ---
   async function loadInvoices() {
     try {
-      const snapshot = await getDocs(collection(db, "invoices"));
+      const user = await waitForClerkUser();
+
+      if (!user) {
+        invoiceList.innerHTML = "<p class='text-warning'>Please sign in to view your invoices.</p>";
+        return;
+      }
+
+      console.log("🔑 Clerk user detected:", user.id);
+
+      // ✅ Query invoices belonging to this user
+      const invoicesRef = collection(db, "invoices");
+      const q = query(invoicesRef, where("userId", "==", user.id), orderBy("timestamp", "desc"));
+      const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
         invoiceList.innerHTML = "<p class='text-muted'>No invoices found yet.</p>";
         return;
       }
 
+      let html = "";
       snapshot.forEach((doc) => {
         const data = doc.data();
-        const card = document.createElement("div");
-        card.className = "col-md-4";
-        card.innerHTML = `
-          <div class="invoice-card">
-            <h5 class="mb-2">${data.filename || "Invoice"}</h5>
-            <p class="text-secondary mb-1">
-              <small>${new Date(data.timestamp).toLocaleString()}</small>
-            </p>
-            <a href="${data.pdfUrl}" target="_blank" class="btn btn-sm btn-outline-info me-2">
-              <i class="bi bi-eye"></i> View
-            </a>
-            <a href="${data.pdfUrl}" download="${data.filename}" class="btn btn-sm btn-primary">
-              <i class="bi bi-download"></i> Download
-            </a>
+        html += `
+          <div class="col-md-4">
+            <div class="invoice-card">
+              <h5 class="mb-2">${data.filename || "Invoice"}</h5>
+              <p class="text-secondary mb-1">
+                <small>${new Date(data.timestamp).toLocaleString()}</small>
+              </p>
+              <a href="${data.pdfUrl}" target="_blank" class="btn btn-sm btn-outline-info me-2">
+                <i class="bi bi-eye"></i> View
+              </a>
+              <a href="${data.pdfUrl}" download="${data.filename}" class="btn btn-sm btn-primary">
+                <i class="bi bi-download"></i> Download
+              </a>
+            </div>
           </div>
         `;
-        invoiceList.appendChild(card);
       });
+
+      invoiceList.innerHTML = html;
     } catch (error) {
-      console.error(" Error loading invoices:", error);
+      console.error("❌ Error loading invoices:", error);
       invoiceList.innerHTML = "<p class='text-danger'>Error loading invoices.</p>";
     }
   }
 
-  // --- Run immediately ---
-  loadInvoices();
+  document.addEventListener("DOMContentLoaded", loadInvoices);
 </script>
-
-
 
 
 </body>
