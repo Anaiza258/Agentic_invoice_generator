@@ -34,8 +34,11 @@
 }
 </script>
 
+<link rel="canonical" href="https://invoice-ai.link61963.workers.dev/">
   <!-- ✅ Favicon -->
-  <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+
+
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <!-- Bootstrap Icons -->
@@ -852,50 +855,60 @@ background: linear-gradient(90deg, #61c0ff 0%, #ff3cff 100%);
     <!-- Connector Line -->
     <div class="line"></div>
 
-    <!-- Feature 1 -->
+    <!-- Feature 1: Voice -->
     <div class="feature-step left">
       <div class="feature-card glass">
         <i class="bi bi-mic-fill feature-icon"></i>
         <h5>Voice-Powered Creation</h5>
-        <p>Speak your invoice, and let AI handle the formatting instantly.</p>
+        <p>Speak your invoice, and let AI handle the parsing and formatting instantly — items, amounts, and due dates extracted automatically.</p>
       </div>
     </div>
 
-    <!-- Feature 2 -->
+    <!-- NEW Feature 2: Text-to-Invoice -->
     <div class="feature-step right">
+      <div class="feature-card glass">
+        <i class="bi bi-chat-square-text-fill feature-icon"></i>
+        <h5>Text → Invoice (Type & Generate)</h5>
+        <p>Prefer typing? Describe the invoice in natural text — e.g. “Invoice Zara: 2 design revisions @ $150, due in 14 days” — and InvoCue will parse that text into a ready invoice.</p>
+      </div>
+    </div>
+
+    <!-- Feature 3: Smart Editing (moved after text) -->
+    <div class="feature-step left">
       <div class="feature-card glass">
         <i class="bi bi-pencil-square feature-icon"></i>
         <h5>Smart Editing</h5>
-        <p>Make quick changes with an elegant editor designed for speed.</p>
+        <p>Make quick changes with an elegant editor designed for speed — inline suggestions, quick totals, and copy/paste-friendly controls.</p>
       </div>
     </div>
 
-    <!-- Feature 3 -->
+    <!-- Feature 4: AI Assistance -->
+    <div class="feature-step right">
+      <div class="feature-card glass">
+        <i class="bi bi-lightning-charge-fill feature-icon"></i>
+        <h5>AI Assistance</h5>
+        <p>Contextual suggestions for missing information, optimized layouts, and payment terms so your invoice looks professional every time.</p>
+      </div>
+    </div>
+
+    <!-- Feature 5: Download PDF -->
     <div class="feature-step left">
       <div class="feature-card glass">
         <i class="bi bi-file-earmark-arrow-down feature-icon"></i>
         <h5>Download as PDF</h5>
-        <p>Finalize and export your invoice in a polished PDF instantly.</p>
+        <p>Finalize and export your invoice in a polished PDF instantly — print-ready and brandable with logos and links.</p>
       </div>
     </div>
 
-    <!-- Feature 4 -->
+    <!-- Feature 6: Invoice Gallery -->
     <div class="feature-step right">
       <div class="feature-card glass">
         <i class="bi bi-collection feature-icon"></i>
         <h5>Invoice Gallery</h5>
-        <p>All your past invoices organized in one beautiful, searchable space.</p>
+        <p>All your past invoices organized in one beautiful, searchable space — filter by client, date, or status.</p>
       </div>
     </div>
 
-    <!-- Feature 5 -->
-    <div class="feature-step left">
-      <div class="feature-card glass">
-        <i class="bi bi-lightning-charge-fill feature-icon"></i>
-        <h5>AI Assistance</h5>
-        <p>Get AI suggestions for missing info, client details, or invoice layout.</p>
-      </div>
-    </div>
   </div>
 </section>
 
