@@ -100,6 +100,64 @@ background: linear-gradient(90deg, #61c0ff 0%, #ff3cff 100%);
       text-transform: uppercase;
     }
 
+    /* Make brand not push too much space on small screens */
+.navbar-brand.stylish-logo {
+  white-space: nowrap;        
+  line-height: 1;
+  display: inline-block;
+  max-width: 48%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Let navbar items wrap when there's not enough horizontal space */
+.navbar-nav.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* When collapsed, center the nav items vertically and add spacing */
+@media (max-width: 991.98px) {
+  .navbar-custom .navbar-collapse {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  /* Make auth buttons full width inside collapsed menu for easy tapping */
+  .auth-wrapper {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+    gap: 0.5rem;
+  }
+  .auth-wrapper .btn {
+    min-width: 120px;
+  }
+
+  /* Reduce brand size slightly on very small screens */
+  .navbar-brand.stylish-logo {
+    font-size: 1.4rem;
+    max-width: 60%;
+  }
+}
+
+/* Ensure toggler icon is visible on dark background */
+.navbar-dark .navbar-toggler-icon {
+  filter: invert(1); /* invert so icon shows on dark backgrounds if needed */
+}
+
+/* Make Get Started button wrap nicely */
+.get-started-btn {
+  white-space: nowrap;
+}
+
+/* Keep nav links readable */
+.navbar-custom .nav-link {
+  padding: 0.4rem 0.6rem;
+}
+
     .navbar-custom,
     .navbar-custom .nav-link,
     .navbar-custom .btn-outline-secondary {
@@ -293,7 +351,7 @@ background: linear-gradient(90deg, #61c0ff 0%, #ff3cff 100%);
         </ul>
 
         <!-- Right Auth Buttons: placed inside collapse so they appear under menu on small screens -->
-        <div class="d-flex align-items-center gap-2 ms-lg-3 auth-wrapper">
+        <div class="d-flex align-items-center gap-2 ms-lg-3 auth-wrapper" id="auth-buttons">
           <a class="btn btn-outline-secondary" href="#" id="signinBtn">Sign In</a>
           <a class="btn btn-success ms-1" href="#" id="signupBtn">Sign Up</a>
         </div>
