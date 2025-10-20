@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://invoice-ai.link61963.workers.dev/sitemap.xml
