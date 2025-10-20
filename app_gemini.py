@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, jsonify, redirect, url_for
 import os
 import uuid
-import requests
+import requests, jwt
 from datetime import datetime
 import google.generativeai as genai
 from dotenv import load_dotenv
@@ -18,6 +18,7 @@ from email.mime.application import MIMEApplication
 from clerk_backend_api import Clerk
 from supabase import create_client, Client
 from payments import payments_bp
+
 
 
 # Load environment variables
@@ -46,9 +47,6 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def index():
     return render_template('index.html')
 
-@app.route('/my_invoices')
-def my_invoices():
-    return render_template('my_invoices.html')
 
 # Middleware-like decorator for auth 
 def require_auth(func):
@@ -195,6 +193,8 @@ def safe_float(val):
         return float(val) if val and val.strip() != '' else 0.0
     except ValueError:
         return 0.0
+
+
 
 @app.route('/save_invoice', methods=['POST'])
 def save_invoice():

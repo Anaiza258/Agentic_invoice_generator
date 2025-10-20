@@ -662,11 +662,11 @@ background: linear-gradient(90deg, #61c0ff 0%, #ff3cff 100%);
 
 
   <!-- Navbar -->
-  <header>
-  <nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
+<header>
+  <nav class="navbar navbar-expand-lg navbar-custom navbar-dark shadow-sm">
     <div class="container">
       <!-- LEFT: Stylish Text Logo -->
-      <a class="navbar-brand stylish-logo" href="{{ url_for('index') }}">InvoCue</a>
+      <a class="navbar-brand stylish-logo me-3" href="{{ url_for('index') }}">InvoCue</a>
 
       <!-- Hamburger for mobile -->
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
@@ -674,10 +674,10 @@ background: linear-gradient(90deg, #61c0ff 0%, #ff3cff 100%);
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <!-- Center and Right Sections -->
+      <!-- Collapse wrapper (contains center nav + auth controls) -->
       <div class="collapse navbar-collapse" id="mainNavbar">
-        <!-- Center Nav Items -->
-        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-2">
+        <!-- Center Nav Items: allow them to wrap when space is tight -->
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-2 flex-wrap">
           <li class="nav-item">
             <a class="nav-link nav-underline" href="{{ url_for('index') }}">Home</a>
           </li>
@@ -685,30 +685,30 @@ background: linear-gradient(90deg, #61c0ff 0%, #ff3cff 100%);
             <a class="nav-link nav-underline" href="javascript:void(0)" onclick="goToTool(event)">Generate Invoice</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link nav-underline" href="{{ url_for('my_invoices') }}">My Invoices</a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link nav-underline" href="{{ url_for('pricing') }}">Pricing</a>
           </li>
           <li class="nav-item">
             <a class="nav-link nav-underline" href="{{ url_for('contact') }}">Contact us</a>
           </li>
-          <li class="nav-item">
-            <a class="btn btn-primary px-4 ms-lg-3 get-started-btn" href="javascript:void(0)" onclick="goToTool(event)">
+
+          <!-- special: Get Started appears in nav so it can wrap nicely -->
+          <li class="nav-item ms-lg-3">
+            <a class="btn btn-primary px-4 get-started-btn" href="javascript:void(0)" onclick="goToTool(event)">
               Get Started Free
             </a>
           </li>
         </ul>
 
-        <!-- Right Auth Buttons -->
-        <div class="d-flex align-items-center gap-2 ms-lg-3" id="auth-buttons">
-          <a class="btn btn-outline-secondary" href="#">Sign In</a>
-          <a class="btn btn-success ms-1" href="#">Sign Up</a>
+        <!-- Right Auth Buttons: placed inside collapse so they appear under menu on small screens -->
+        <div class="d-flex align-items-center gap-2 ms-lg-3 auth-wrapper">
+          <a class="btn btn-outline-secondary" href="#" id="signinBtn">Sign In</a>
+          <a class="btn btn-success ms-1" href="#" id="signupBtn">Sign Up</a>
         </div>
       </div>
     </div>
   </nav>
 </header>
+
 
 
   <section class="intro-section container-fluid d-flex flex-column justify-content-center align-items-center">

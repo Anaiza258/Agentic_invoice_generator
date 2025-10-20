@@ -1,0 +1,38 @@
+{
+    "invoice": {
+        "invoiceNumber": "INV-XXXXXX",
+        "issueDate": "",
+        "dueDate": "",
+        "payment_status": "UNPAID",
+        "currency": "",
+        "issuer_info": {
+            "name": "Your Name",
+            "contact": "Your Contact",
+            "address": "Your Address",
+            "email": "Your Email"
+        },
+        "client": {
+            "name": "Client Name",
+            "contact": "Client Contact",
+            "address": "Client Address",
+            "email": "Client Email"
+        },
+        "serviceDetails": [
+            {
+                "description": "Service/Product 1",
+                "quantity": 1,
+                "unitPrice": "0",
+                "totalPrice": "0.00"
+            }
+        ],
+        "shipping_cost": "",
+        "vatAmount": "",
+        "vatOption": "percentage",
+        "taxAmount": "",
+        "taxOption": "percentage",
+        "totalAmount": "0.00",
+        "paymentMethod": "Payment Method",
+        "endNote": "End Note",
+        "logo": ""
+    }
+}

@@ -1,0 +1,38 @@
+{
+    "invoice": {
+        "invoiceNumber": "INV-000001",
+        "issueDate": "2024-01-01",
+        "dueDate": "2024-01-31",
+        "payment_status": "UNPAID",
+        "currency": "",
+        "issuer_info": {
+            "name": "Your Name [ADD]",
+            "contact": "Your Contact [ADD]",
+            "address": "Your Address [ADD]",
+            "email": "your_email@example.com [ADD]"
+        },
+        "client": {
+            "name": "Client Name [ADD]",
+            "contact": "Client Contact [ADD]",
+            "address": "Client Address [ADD]",
+            "email": "client_email@example.com [ADD]"
+        },
+        "serviceDetails": [
+            {
+                "description": "Service/Product 1 [ADD]",
+                "quantity": 1,
+                "unitPrice": "0",
+                "totalPrice": "0.00"
+            }
+        ],
+        "shipping_cost": "",
+        "vatAmount": "",
+        "vatOption": "percentage",
+        "taxAmount": "",
+        "taxOption": "percentage",
+        "totalAmount": "0.00",
+        "paymentMethod": "Payment Method [ADD]",
+        "endNote": "Thank you.",
+        "logo": ""
+    }
+}
