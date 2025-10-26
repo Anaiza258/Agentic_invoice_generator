@@ -1,34 +1,34 @@
 
- // *********** intro section animation **********
-    document.addEventListener("DOMContentLoaded", function () {
-      const lines = [
-        "Create invoices with just your voice",
-        "Fast, smart, and professional"
-      ];
+//  // *********** intro section animation **********
+//     document.addEventListener("DOMContentLoaded", function () {
+//       const lines = [
+//         "Create invoices with just your voice",
+//         "Fast, smart, and professional"
+//       ];
 
-      const speed = 60; // typing speed
-      let lineIndex = 0;
-      let charIndex = 0;
+//       const speed = 60; // typing speed
+//       let lineIndex = 0;
+//       let charIndex = 0;
 
-      function typeWriter() {
-        if (lineIndex < lines.length) {
-          const currentLine = lines[lineIndex];
-          if (charIndex < currentLine.length) {
-            document.getElementById("line" + (lineIndex + 1)).textContent += currentLine.charAt(charIndex);
-            charIndex++;
-            setTimeout(typeWriter, speed);
-          } else {
-            //  finished class for pipe after line completes
-            document.getElementById("line" + (lineIndex + 1)).classList.add("finished");
-            lineIndex++;
-            charIndex = 0;
-            setTimeout(typeWriter, 600); // pause before next line
-          }
-        }
-      }
+//       function typeWriter() {
+//         if (lineIndex < lines.length) {
+//           const currentLine = lines[lineIndex];
+//           if (charIndex < currentLine.length) {
+//             document.getElementById("line" + (lineIndex + 1)).textContent += currentLine.charAt(charIndex);
+//             charIndex++;
+//             setTimeout(typeWriter, speed);
+//           } else {
+//             //  finished class for pipe after line completes
+//             document.getElementById("line" + (lineIndex + 1)).classList.add("finished");
+//             lineIndex++;
+//             charIndex = 0;
+//             setTimeout(typeWriter, 600); // pause before next line
+//           }
+//         }
+//       }
 
-      typeWriter();
-    });
+//       typeWriter();
+//     });
 
 
     // ******* Typographic cluster small parallax handler (subtle depth)  ********
