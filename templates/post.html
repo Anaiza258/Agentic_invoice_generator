@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- ✅ Basic SEO -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <title>{{ post.title }} | InvoCue Blog</title>
+  <meta name="description" content="{{ post.description }}">
+  
+  <!-- Open Graph for social sharing -->
+  <meta property="og:title" content="{{ post.title }}">
+  <meta property="og:description" content="{{ post.description }}">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://invoice-ai.link61963.workers.dev/blog/{{ post.slug }}">
+  {% if post.image_url %}
+  <meta property="og:image" content="{{ post.image_url }}">
+  {% endif %}
+  
+  <!-- Article-specific Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "{{ post.title }}",
+    "description": "{{ post.description }}",
+    "author": {
+      "@type": "Person",
+      "name": "{{ post.author or 'Anaiza Tariq' }}"
+    },
+    "datePublished": "{{ post.date }}",
+    "url": "https://invoice-ai.link61963.workers.dev/blog/{{ post.slug }}"
+  }
+  </script>
+    <link rel="canonical" href="https://invoice-ai.link61963.workers.dev/blog/{{ post.slug }}">
+
+    <!-- ✅ Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Google Fonts: Poppins & Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --grid-gap: 40px;
+            --grid-alpha: 0.06;
+            --nav-height: 72px;
+            --content-max-width: 800px;
+            --content-padding: 2.6rem 0 2.2rem 0;
+           --post-heading: #d3d8e0;     
+           --post-subtle: #c5d1df;      
+           --post-body: #f3f6fa;         
+           --post-meta: #9aa9b9;       
+           --post-block: #2b3149;        
+
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            color: #ffffff;
+            padding: 0;
+            background: radial-gradient(circle at 30% 80%, #00d5ff65 10%, transparent 65%),
+                radial-gradient(circle at 75% 25%, #6c5cff8e 7%, transparent 50%),
+                linear-gradient(160deg, #1a1f2e, #2a324a, #242937);
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        /* nav bar  */
+        .stylish-logo {
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            font-size: 2rem;
+            /* background: linear-gradient(90deg, #ff3cff   0%, #7a3cff 100%); */
+            background: linear-gradient(90deg, #61c0ff 0%, #ff3cff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        /* Make brand not push too much space on small screens */
+        .navbar-brand.stylish-logo {
+            white-space: nowrap;
+            line-height: 1;
+            display: inline-block;
+            max-width: 48%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Let navbar items wrap when there's not enough horizontal space */
+        .navbar-nav.flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* When collapsed, center the nav items vertically and add spacing */
+        @media (max-width: 991.98px) {
+            .navbar-custom .navbar-collapse {
+                padding-top: 0.75rem;
+                padding-bottom: 0.75rem;
+            }
+
+            /* Make auth buttons full width inside collapsed menu for easy tapping */
+            .auth-wrapper {
+                width: 100%;
+                justify-content: center;
+                margin-top: 0.5rem;
+                gap: 0.5rem;
+            }
+
+            .auth-wrapper .btn {
+                min-width: 120px;
+            }
+
+            /* Reduce brand size slightly on very small screens */
+            .navbar-brand.stylish-logo {
+                font-size: 1.4rem;
+                max-width: 60%;
+            }
+        }
+
+        /* Ensure toggler icon is visible on dark background */
+        .navbar-dark .navbar-toggler-icon {
+            filter: invert(1);
+            /* invert so icon shows on dark backgrounds if needed */
+        }
+
+        /* Make Get Started button wrap nicely */
+        .get-started-btn {
+            white-space: nowrap;
+        }
+
+        /* Keep nav links readable */
+        .navbar-custom .nav-link {
+            padding: 0.4rem 0.6rem;
+        }
+
+        .navbar-custom,
+        .navbar-custom .nav-link,
+        .navbar-custom .btn-outline-secondary {
+            color: #fff !important;
+            font-size: 17px;
+        }
+
+        /* Get Started Button */
+        .get-started-btn {
+            font-weight: 600;
+            border-radius: 2rem;
+            background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+            color: #fff !important;
+            box-shadow: 0 2px 8px rgba(67, 206, 162, 0.1);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .get-started-btn:hover {
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 4px 16px rgba(67, 206, 162, 0.18);
+            color: #fff !important;
+        }
+
+        /* nav bar  */
+        .navbar-custom {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            z-index: 40;
+            background: linear-gradient(180deg, rgba(30, 34, 46, 0.18), rgba(30, 34, 46, 0.08));
+            backdrop-filter: blur(8px) saturate(120%);
+            -webkit-backdrop-filter: blur(8px) saturate(120%);
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            transition: background .18s ease, transform .18s ease;
+        }
+
+        /* Nav Underline Effect */
+        .nav-underline {
+            position: relative;
+            color: #fff !important;
+            transition: color 0.25s ease;
+        }
+
+        /* Hover + Active underline */
+        .nav-underline::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -2px;
+            height: 3px;
+            background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+            border-radius: 2px;
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 0.25s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        /* Show underline only when active or hovered */
+        .nav-underline:hover::after,
+        .nav-underline.active::after {
+            transform: scaleX(1);
+        }
+
+        /* Active link color */
+        .nav-underline.active {
+            color: #43cea2 !important;
+            font-weight: 600;
+        }
+
+
+        @media (max-width: 991.98px) {
+            .navbar-nav {
+                gap: 0 !important;
+            }
+
+            .get-started-btn {
+                margin-left: 0 !important;
+                margin-top: 0.5rem;
+            }
+
+            .d-flex.align-items-center {
+                margin-top: 0.5rem;
+            }
+        }
+
+
+        /* Footer Section */
+        .footer {
+            background: linear-gradient(180deg, rgba(18, 21, 32, 0.97), rgba(26, 31, 46, 0.98));
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            padding-top: 2rem;
+        }
+
+        .footer-logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #61c0ff 0%, #ff3cff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .footer p {
+            margin: 0;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .footer h6 {
+            color: #e2e8f0;
+            font-size: 1rem;
+        }
+
+        .footer ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .footer ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            font-weight: 500;
+        }
+
+        .footer ul li a:hover {
+            color: #00d9f5;
+        }
+
+        .footer .social-icons a {
+            display: inline-block;
+            margin-right: 0.6rem;
+            font-size: 1.25rem;
+            color: #cbd5e1;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        small {
+            color: #fcffff8c;
+        }
+
+        .footer .social-icons a:hover {
+            color: #00f5a0;
+            transform: translateY(-2px);
+        }
+
+        .footer hr {
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Main post content area */
+        main.post-main {
+            max-width: var(--content-max-width);
+            margin: 0 auto;
+            padding: calc(var(--nav-height) + 5rem) 2.6rem 2.2rem 2.6rem;
+        }
+
+
+        .post-title {
+            color: var(--post-heading);
+
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.1rem;
+            font-weight: 700;
+            line-height: 1.17;
+            margin-bottom: 0.4rem;
+            letter-spacing: -.01em;
+        }
+
+        .post-meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1.05rem;
+            font-size: 0.98rem;
+            color: var(--post-meta);
+            margin-bottom: 1.4rem;
+            margin-top: .5rem;
+        }
+
+        .author-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #222a3a;
+            color: var(--post-heading);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.04rem;
+            margin-right: 0.7rem;
+            border: 1.5px solid #29304a;
+            letter-spacing: .03em;
+        }
+
+        .author-block {
+            display: flex;
+            align-items: center;
+        }
+
+        .meta-divider {
+            height: 1.1em;
+            border-left: 1px solid rgba(180, 190, 200, .13);
+            margin: 0 0.95rem;
+        }
+
+        /* Optional hero image */
+        .hero-image {
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 1.4rem 0;
+            box-shadow: 0 2px 24px #1b22395d;
+            border: 1px solid #263348;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Blog post body */
+        .post-body {
+            font-family: 'Roboto', 'Poppins', Arial, sans-serif;
+            font-size: 1.15rem;
+            color: var(--post-body);
+            line-height: 1.78;
+            letter-spacing: -.011em;
+            background: none;
+        }
+
+        .post-body p {
+            margin-bottom: 1.23em;
+        }
+
+        .post-body h2,
+        .post-body h3 {
+            color: var(--post-heading);
+            margin-top: 2.1rem;
+            margin-bottom: 1.05rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .post-body h2 {
+            font-size: 1.40rem;
+        }
+
+        .post-body h3 {
+            font-size: 1.13rem;
+        }
+
+        .post-body ul,
+        .post-body ol {
+            margin-left: 2rem;
+            margin-bottom: 1.08em;
+        }
+
+        .post-body blockquote {
+            background: var(--post-block);
+            border-left: 3.3px solid #415382;
+            color: #dee7fd;
+            padding: 1.02em 1.3em;
+            margin: 1.35rem 0;
+            font-style: italic;
+            border-radius: 7px;
+            font-size: 1.11rem;
+        }
+
+        .post-body pre {
+            background: #232942;
+            color: #eaf3fe;
+            font-size: .97em;
+            padding: .92em 1.07em;
+            border-radius: 7px;
+            margin: 1.4em 0;
+            overflow: auto;
+            box-shadow: 0 2px 10px #1a2237b7;
+        }
+
+        .post-body code {
+            background: #23294288;
+            color: #eaf3fe;
+            border-radius: 5px;
+            font-size: 0.97em;
+            padding: 0.11em 0.43em;
+        }
+
+        .post-body img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1.2em 0;
+            box-shadow: 0 1px 14px #12183147;
+        }
+
+        /* Post tags */
+        .post-tags {
+            margin-top: 2.2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: .55rem;
+        }
+
+        .post-tag {
+            background: #222a3a;
+            color: #bbe3fc;
+            border-radius: 999px;
+            padding: 0.215em 0.99em;
+            font-size: .93em;
+            font-weight: 500;
+            letter-spacing: .02em;
+            border: 1px solid #2b314a;
+            transition: background .13s;
+        }
+
+        .post-tag:hover {
+            background: #263051;
+            color: #fff;
+        }
+
+        /* Related section */
+        .post-related {
+            margin-top: 2.7rem;
+        }
+
+        .post-related-title {
+            color: var(--post-meta);
+            font-size: 1.09rem;
+            margin-bottom: .65rem;
+        }
+
+        .post-related-list {
+            padding-left: 0;
+            list-style: none;
+            margin: 0;
+        }
+
+        .post-related-list li {
+            margin-bottom: .19rem;
+        }
+
+        .post-related-list a {
+            color: #8fc6fe;
+            text-decoration: none;
+            font-size: 1.04em;
+            font-weight: 500;
+        }
+
+        .post-related-list a:hover {
+            text-decoration: underline;
+            color: #fff;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 767.98px) {
+            main.post-main {
+                padding: 1.3rem 0 1.2rem 0;
+            }
+
+            .post-title {
+                font-size: 1.23rem;
+            }
+
+            .post-body {
+                font-size: 1.03rem;
+            }
+        }
+
+        /* Back to Blogs button */
+        .back-to-blogs {
+            margin-bottom: 1rem;
+        }
+
+        .back-to-blogs a {
+            display: inline-block;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #43cea2;
+            background: rgba(30, 34, 46, 0.3);
+            padding: 0.45rem 0.9rem;
+            border-radius: 0.6rem;
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid rgba(67, 206, 162, 0.4);
+        }
+
+        .back-to-blogs a:hover {
+            background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(67, 206, 162, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-custom navbar-dark shadow-sm">
+            <div class="container">
+                <!-- LEFT: Stylish Text Logo -->
+                <a class="navbar-brand stylish-logo me-3" href="{{ url_for('index') }}">InvoCue</a>
+
+                <!-- Hamburger for mobile -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Collapse wrapper (contains center nav + auth controls) -->
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <!-- Center Nav Items: allow them to wrap when space is tight -->
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-2 flex-wrap">
+                        <li class="nav-item">
+                            <a class="nav-link nav-underline" href="{{ url_for('index') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-underline" href="javascript:void(0)"
+                                onclick="goToTool(event)">Generate Invoice</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-underline" href="{{ url_for('pricing') }}">Pricing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-underline" href="{{ url_for('contact') }}">Contact us</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-underline" href="{{ url_for('blog_home') }}">Blogs</a>
+                        </li>
+
+                        <!-- special: Get Started appears in nav so it can wrap nicely -->
+                        <li class="nav-item ms-lg-3">
+                            <a class="btn btn-primary px-4 get-started-btn" href="javascript:void(0)"
+                                onclick="goToTool(event)">
+                                Get Started Free
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Right Auth Buttons: placed inside collapse so they appear under menu on small screens -->
+                    <div class="d-flex align-items-center gap-2 ms-lg-3 auth-wrapper" id="auth-buttons">
+                        <a class="btn btn-outline-secondary" href="#">Sign In</a>
+                        <a class="btn btn-success ms-1" href="#">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="post-main">
+        <div>
+            <div class="back-to-blogs">
+                <a href="{{ url_for('blog_home') }}">
+                    ← Back to Blogs
+                </a>
+            </div>
+
+            <h1 class="post-title">{{ post.title }}</h1>
+            <div class="post-meta-row mb-2">
+                <div class="author-block">
+                    <span class="author-avatar">
+                        {{ (post.author_initials if post.author_initials) or (post.author[:2]|upper if post.author) or
+                        "AT" }}
+                    </span>
+                    <div>
+                        <div style="color:var(--post-heading); font-weight:600;">
+                            {{ post.author or "Anaiza Tariq" }}
+                        </div>
+                        <div style="font-size:.94em;">
+                            {{ post.date }}{% if post.read_time %} <span class="meta-divider"></span> {{ post.read_time
+                            }}{% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% if post.category %}
+                <span class="meta-divider"></span>
+                <span style="color:var(--post-meta);font-size:.96em;">{{ post.category }}</span>
+                {% endif %}
+            </div>
+            {% if post.image_url %}
+            <div class="hero-image">
+                <img src="{{ post.image_url }}" alt="{{ post.title }}">
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="post-body">
+            {{ content|safe }}
+        </div>
+
+        {% if post.tags %}
+        <div class="post-tags">
+            {% for tag in post.tags %}
+            <span class="post-tag">#{{ tag }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if related_posts %}
+        <div class="post-related">
+            <div class="post-related-title">Related reading</div>
+            <ul class="post-related-list">
+                {% for r in related_posts %}
+                <li><a href="{{ url_for('blog_post', slug=r.slug) }}">{{ r.title }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </main>
+
+
+    <!-- Footer Section -->
+    <footer class="footer py-5 mt-5">
+        <div class="container">
+            <div class="row gy-4">
+                <!-- About -->
+                <div class="col-lg-4 col-md-6">
+                    <a href="#" class="footer-logo">InvoCue</a>
+                    <p class="mt-3">
+                        Your AI-powered invoice generator.<br>
+                        <i class="bi bi-check-circle"></i> Create invoices in seconds<br>
+                        <i class="bi bi-check-circle"></i> Voice + AI Assistance<br>
+                        <i class="bi bi-check-circle"></i> Export to PDF & Share
+                    </p>
+                </div>
+                <!-- Quick Links -->
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="fw-bold mb-3">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>
+                <!-- Resources -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Resources</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Docs</a></li>
+                        <li><a href="#">Support</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <!-- Social Media -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Follow Us</h6>
+                    <div class="social-icons">
+                        <a href="#"><i class="bi bi-twitter"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                        <a href="#"><i class="bi bi-github"></i></a>
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="mt-4 mb-3">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2025 InvoCue. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script async crossorigin="anonymous"
+        data-clerk-publishable-key="pk_test_ZGFzaGluZy1wZXJjaC05Ni5jbGVyay5hY2NvdW50cy5kZXYk"
+        src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js">
+        </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+
+
+
+    <!-- Include SweetAlert2 for nice alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+</body>
+
+</html>

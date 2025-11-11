@@ -9,3 +9,5 @@ langchain
 clerk-backend-api
 gunicorn
 supabase
+markdown2
+python-frontmatter

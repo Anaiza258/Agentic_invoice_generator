@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify, redirect, url_for
+from flask import Flask, request, render_template, jsonify, redirect, url_for, abort, Response
 import os
 import uuid
 import requests, jwt
@@ -18,7 +18,8 @@ from email.mime.application import MIMEApplication
 from clerk_backend_api import Clerk
 from supabase import create_client, Client
 from payments import payments_bp
-
+import markdown2, frontmatter, os
+from werkzeug.security import safe_join
 
 
 # Load environment variables
@@ -39,6 +40,9 @@ clerk = Clerk(os.getenv("CLERK_SECRET_KEY"))
 # Flask setup and ensure upload folder exists
 app = Flask(__name__)
 app.register_blueprint(payments_bp)
+
+# blog post directory
+POSTS_DIR = "posts"
 
 UPLOAD_FOLDER = "static/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -642,6 +646,118 @@ def generate_detailed_pdf(invoice_data):
     except Exception as e:
         print(f"Error generating PDF: {str(e)}")
         return ""
+
+# Sitemap route - automatically includes all blog posts
+@app.route("/sitemap.xml")
+def sitemap():
+    """Generate dynamic sitemap from cached blog posts"""
+    
+    base_url = "https://invoice-ai.link61963.workers.dev"
+    pages = []
+    
+    # Static pages
+    static_pages = [
+        {'loc': '/', 'priority': '1.0', 'changefreq': 'weekly'},
+        {'loc': '/pricing', 'priority': '0.8', 'changefreq': 'monthly'},
+        {'loc': '/contact', 'priority': '0.7', 'changefreq': 'monthly'},
+        {'loc': '/tool', 'priority': '0.7', 'changefreq': 'monthly'},
+        {'loc': '/blog', 'priority': '0.9', 'changefreq': 'daily'},
+    ]
+    
+    for page in static_pages:
+        pages.append({
+            'loc': base_url + page['loc'],
+            'lastmod': datetime.now().strftime('%Y-%m-%d'),
+            'priority': page['priority'],
+            'changefreq': page['changefreq']
+        })
+    
+    # Blog posts - automatically from cache
+    for post in BLOG_CACHE['posts']:
+        pages.append({
+            'loc': f"{base_url}/blog/{post['slug']}",
+            'lastmod': post['date'],
+            'priority': '0.8',
+            'changefreq': 'monthly'
+        })
+    
+    # Build XML
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    
+    for page in pages:
+        xml += '  <url>\n'
+        xml += f'    <loc>{page["loc"]}</loc>\n'
+        xml += f'    <lastmod>{page["lastmod"]}</lastmod>\n'
+        xml += f'    <priority>{page["priority"]}</priority>\n'
+        xml += f'    <changefreq>{page["changefreq"]}</changefreq>\n'
+        xml += '  </url>\n'
+    
+    xml += '</urlset>'
+    
+    return Response(xml, mimetype='application/xml')
+
+
+
+# load blog posts into cache at once - when app starts
+BLOG_CACHE = {}
+
+def load_blog_cache():
+    """Load all blog metadata once when app starts"""
+    posts = []
+    for filename in os.listdir(POSTS_DIR):
+        if filename.endswith(".md"):
+            post = frontmatter.load(os.path.join(POSTS_DIR, filename))
+            posts.append({
+                "title": post.get("title"),
+                "slug": post.get("slug"),
+                "date": post.get("date"),
+                "description": post.get("description"),
+                "author": post.get("author", "Anaiza Tariq"),
+                "author_initials": post.get("author_initials", "AT"),
+                "read_time": post.get("read_time", "4 min read"),
+                "category": post.get("category"),
+                "tags": post.get("tags", [])
+            })
+    BLOG_CACHE['posts'] = sorted(posts, key=lambda x: x["date"], reverse=True)
+    print(f" Blog cache loaded: {len(posts)} posts") 
+
+# Call once when app starts
+load_blog_cache()
+
+# Blog routes
+@app.route("/blog")
+def blog_home():
+    return render_template("blog.html", posts=BLOG_CACHE['posts'])
+
+
+@app.route("/blog/<slug>")
+def blog_post(slug):
+    # Only allow alphanumeric, hyphens, underscores
+    if not slug.replace('-', '').replace('_', '').isalnum():
+        abort(404)
+    
+    safe_path = safe_join(POSTS_DIR, f"{slug}.md")
+    if not safe_path or not os.path.exists(safe_path):
+        abort(404)
+    
+    post = frontmatter.load(safe_path)
+    html_content = markdown2.markdown(post.content, extras=['fenced-code-blocks', 'tables', 'header-ids'])
+
+    related_posts = []
+    current_category = post.get("category")
+    current_tags = set(post.get("tags", []))
+    
+    if current_category or current_tags:
+        for p in BLOG_CACHE['posts']:
+            if p['slug'] == slug:
+                continue
+            # Match by category or tags
+            if p.get('category') == current_category or set(p.get('tags', [])).intersection(current_tags):
+                related_posts.append(p)
+                if len(related_posts) >= 3:  # Limit to 3
+                    break
+    return render_template("post.html", post=post, content=html_content, related_posts=related_posts)
 
 
 if __name__ == '__main__':
