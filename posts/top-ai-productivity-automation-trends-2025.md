@@ -8,7 +8,7 @@ author_initials: "AT"
 read_time: "7 min read"
 category: "AI & Automation"
 tags: ["AI productivity", "business automation", "agentic AI", "small business AI", "freelancer tools", "AI trends 2025"]
-image_url: "/static/images/blog/ai-productivity-automation-trends-2025.jpg"
+image_url: "/static/images/ai-productivity-automation-trends-2025.jpg"
 ---
 
 Artificial Intelligence (AI) is reshaping how we work in 2025 — especially for **freelancers and small businesses** seeking to automate workflows without heavy investments.  
