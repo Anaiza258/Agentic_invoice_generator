@@ -647,6 +647,18 @@ def generate_detailed_pdf(invoice_data):
         print(f"Error generating PDF: {str(e)}")
         return ""
 
+
+# robots route for good SEO 
+@app.route('/robots.txt')
+def robots():
+    robots_txt = """User-agent: *
+Allow: /
+
+Sitemap: https://invoice-ai.link61963.workers.dev/sitemap.xml
+"""
+    return Response(robots_txt, mimetype='text/plain')
+
+
 # Sitemap route - automatically includes all blog posts
 @app.route("/sitemap.xml")
 def sitemap():
@@ -660,7 +672,7 @@ def sitemap():
         {'loc': '/', 'priority': '1.0', 'changefreq': 'weekly'},
         {'loc': '/pricing', 'priority': '0.8', 'changefreq': 'monthly'},
         {'loc': '/contact', 'priority': '0.7', 'changefreq': 'monthly'},
-        {'loc': '/tool', 'priority': '0.7', 'changefreq': 'monthly'},
+        {'loc': '/invoice_tool', 'priority': '0.7', 'changefreq': 'monthly'},
         {'loc': '/blog', 'priority': '0.9', 'changefreq': 'daily'},
     ]
     
