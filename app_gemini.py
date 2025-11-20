@@ -664,34 +664,61 @@ Sitemap: https://invoice-ai.link61963.workers.dev/sitemap.xml
 def sitemap():
     """Generate dynamic sitemap from cached blog posts"""
     
-    base_url = "https://invoice-ai.link61963.workers.dev"
+    base_url = "https://invoice-ai.link61963.workers.dev" # Domain buy krne k bad isey change krna mat bhoolna
     pages = []
     
-    # Static pages
+    
     static_pages = [
-        {'loc': '/', 'priority': '1.0', 'changefreq': 'weekly'},
-        {'loc': '/pricing', 'priority': '0.8', 'changefreq': 'monthly'},
-        {'loc': '/contact', 'priority': '0.7', 'changefreq': 'monthly'},
-        {'loc': '/invoice_tool', 'priority': '0.7', 'changefreq': 'monthly'},
-        {'loc': '/blog', 'priority': '0.9', 'changefreq': 'daily'},
+        {
+            'loc': '/', 
+            'lastmod': '2025-11-18',  
+            'priority': '1.0', 
+            'changefreq': 'weekly'
+        },
+        {
+            'loc': '/pricing', 
+            'lastmod': '2025-11-18', 
+            'priority': '0.8', 
+            'changefreq': 'monthly'
+        },
+        {
+            'loc': '/contact', 
+            'lastmod': '2025-11-18', 
+            'priority': '0.7', 
+            'changefreq': 'monthly'
+        },
+        {
+            'loc': '/invoice_tool', 
+            'lastmod': '2025-11-18', 
+            'priority': '0.9', 
+            'changefreq': 'weekly'
+        },
+        {
+            'loc': '/blog', 
+            'lastmod': '2025-11-18', 
+            'priority': '0.9', 
+            'changefreq': 'daily'
+        },
     ]
     
+    # date will be statically set here for static pages
     for page in static_pages:
         pages.append({
             'loc': base_url + page['loc'],
-            'lastmod': datetime.now().strftime('%Y-%m-%d'),
+            'lastmod': page['lastmod'],  #  fixed date for static pages
             'priority': page['priority'],
             'changefreq': page['changefreq']
         })
     
-    # Blog posts - automatically from cache
-    for post in BLOG_CACHE['posts']:
-        pages.append({
-            'loc': f"{base_url}/blog/{post['slug']}",
-            'lastmod': post['date'],
-            'priority': '0.8',
-            'changefreq': 'monthly'
-        })
+    # Blog posts - automatically from cache 
+    if 'posts' in BLOG_CACHE:
+        for post in BLOG_CACHE['posts']:
+            pages.append({
+                'loc': f"{base_url}/blog/{post['slug']}",
+                'lastmod': post['date'], 
+                'priority': '0.8',
+                'changefreq': 'monthly'
+            })
     
     # Build XML
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -708,8 +735,6 @@ def sitemap():
     xml += '</urlset>'
     
     return Response(xml, mimetype='application/xml')
-
-
 
 # load blog posts into cache at once - when app starts
 BLOG_CACHE = {}
