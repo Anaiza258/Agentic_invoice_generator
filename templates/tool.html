@@ -1044,7 +1044,7 @@ background: linear-gradient(90deg, #61c0ff 0%, #ff3cff 100%);
       </div>
        <!-- Usage Notice -->
 <p class="tool-note">
-  ⚡ You can create up to <span class="highlight">5 free invoices</span> at a time. 
+  ⚡ You can create up to <span class="highlight">10 free invoices</span> at a time. 
   <a href="/pricing" class="upgrade">Upgrade anytime for unlimited access</a>.
 </p>
 
@@ -1081,7 +1081,7 @@ background: linear-gradient(90deg, #61c0ff 0%, #ff3cff 100%);
         
         <!-- Subheading / Hook text -->
         <p class="text-secondary mb-4" style="font-size: 1.05rem;">
-          You’ve reached your free limit of <strong>5 invoices</strong> — but you’re clearly building momentum!  
+          You’ve reached your free limit of <strong>10 invoices</strong> — but you’re clearly building momentum!  
           <br><span class="text-dark fw-semibold">Upgrade now to unlock unlimited invoices, faster generation, and premium features.</span>
         </p>
         
@@ -2101,7 +2101,7 @@ collapseTaxAmount.addEventListener('hide.bs.collapse', function () {
 
   function canGenerateInvoice() {
     let count = parseInt(localStorage.getItem("invoiceCount")) || 0;
-    if (count >= 5) {
+    if (count >= 10) {
       showUpgradeMessage();
       return false;
     }

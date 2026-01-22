@@ -314,9 +314,9 @@ def get_transcript(audio_path):
             audio_data = audio_file.read()
         
         response = requests.post(
-            "https://api-inference.huggingface.co/models/openai/whisper-large-v3-turbo",
+            "https://router.huggingface.co/hf-inference/models/openai/whisper-large-v3-turbo",
             headers=headers,
-            data=audio_data  # send raw binary data.
+            data=audio_data  # send raw binary data.      
         )
         
         if response.status_code == 200:
@@ -393,7 +393,7 @@ def generate_invoice(transcript):
         Invoice Data:
         {transcript}
         """
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         response = model.generate_content(prompt)
         if response and response.candidates:
             invoice_content = response.candidates[0].content.parts[0].text.strip()
